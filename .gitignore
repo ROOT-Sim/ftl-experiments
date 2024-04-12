@@ -1,3 +1,13 @@
+rootsim_gputw/
+sim_build/
+run_logs/
+configs/
+bins/
+*.pdf
+*report.log
+*.bin
+*.aux
+
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
