@@ -1,12 +1,12 @@
-\documentclass[]{article}
+\documentclass[8pt]{article}
 \usepackage[]{algorithm2e}
 \usepackage{subcaption}
 \usepackage{pbox}
 \usepackage{balance}
 \usepackage{graphicx}
-\usepackage[a4paper, total={17cm, 23cm},  margin=1.2cm]{geometry}
+\usepackage[a4paper,  margin=1cm]{geometry}
 
-\title{Reproducing figures and tables of: ``Follow the Leader: Alternating CPU/GPU Computations in PDES''}
+\title{Reproducing computational results of: ``Follow the Leader: Alternating CPU/GPU Computations in PDES''}
 
 \author{}
 \date{}
@@ -14,7 +14,23 @@
 
 \maketitle
 
-
+\section*{Hardware/software configuration}
+{\scriptsize
+\begin{minipage}[t]{0.45\textwidth}
+Authors' configuration:
+\begin{itemize}
+\item CPU: AMD Ryzen 9 7950x
+\item GPU: NVIDIA RTX 3090 Ti
+\item RAM: 64GB
+\end{itemize}
+\end{minipage}
+\begin{minipage}[t]{0.45\textwidth}
+RCR:
+\begin{itemize}
+\input{run_logs/machine.tex}
+\end{itemize}
+\end{minipage}
+}
 \setcounter{figure}{2}
 
 \section*{Figure 2}

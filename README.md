@@ -29,11 +29,11 @@ The hardware/software configuration used by the authors is:
 ## Dependencies
 
 * For running tests: ```bash, gcc, cmake, make, cuda, python3, perf```
-* For processing data: ```bash, Python3, pip3, matplotlib, numpy, scipy, seaborn, scikit-learn```
-* For generating RCR report: ```pdflatex```
+* For processing data and generating figures: ```bash, Python3, pip3, pandas, gnuplot, fonts-linuxlibertine```
+* For generating RCR report: ```pdflatex, lscpu, lsmem, lspci```
 
 
-## Kick the tire instructions
+## Kick the tires instructions
 
 1. Clone the repository: ```git clone https://github.com/ROOT-Sim/ftl-experiments.git FTL```
 2. Build: ```./exp.sh build```
@@ -61,9 +61,10 @@ The software is released with the GPL 3 license.
 
 The article has three major claims:
 
-* C1:
-* C2:
-* C3:
+* C1: the balanced configuration favours GPU PDES implementation
+* C2: the unbalanced configuration favours CPU PDES implementation
+* C3: the follow-the-leader approach can reduce the execution time of simulations with time-varying computational
+intensity 
 
 ## Reproducing the results
 
@@ -83,26 +84,46 @@ To setup the environment:
 
 To run an experiment <exp> and process its results, type the following:
 
-3. ```nohup ./exp.sh <exp>```
-4. ```nohup ./process_exp.sh <exp>```
+3. ```nohup ./exp.sh run_<exp> &```
+4. ```./exp.sh plot_<exp>```
 
 To run all experiments and process their results at once, type the following:
 
-3. ```nohup ./exp.sh all```
-4. ```nohup ./process_exp.sh all```
+3. ```nohup ./exp.sh run_all &```
+4. ```./process_exp.sh all```
 
 The expected runtime of each experiment is detailed in the following table:
 
 | Experiment   | Runtime |
 |--------------|---------|
-| balanced     | 1h |
-| unbalanced   | 1h 30m |
-| alternating  | 3h |
-| **Total**    | **26h** |
+| balanced     | 10m     |
+| unbalanced   | 10m     |
+| alternating  | 10m     |
+| **Total**    | **30m** |
+
+
+Once all experiments have been run, you can find each figure at:
+
+| Figure       | Path |
+|--------------|---------|
+| 2a           | run_logs/balanced/1.processed.pdf     |
+| 2b           | run_logs/unbalanced/1.processed.pdf     |
+| 2c           | run_logs/alternating/1.processed.pdf     |
+| 2d           | run_logs/balanced/2.processed.pdf     |
+| 2e           | run_logs/unbalanced/2.processed.pdf     |
+| 2f           | run_logs/alternating/2.processed.pdf     |
+| 2g           | run_logs/balanced/3.processed.pdf     |
+| 2h           | run_logs/unbalanced/3.processed.pdf     |
+| 2i           | run_logs/alternating/3.processed.pdf     |
+| 3a           | run_logs/balanced.energy.pdf     |
+| 3b           | run_logs/unbalanced.energy.pdf     |
+| 3c           | run_logs/alternating.energy.pdf     |
 
 To generate a report with both original and reproduced figures:
 
 5. ```pdflatex report.tex```
+
+
 
 ## Notes
 All scripts have been tested by running them from the following path:
@@ -115,7 +136,7 @@ All scripts have been tested by running them from the following path:
 
 * Installing CUDA 12
   * follow the instruction on https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html
-  * add ```/usr/local/cuda/bin to the PATH variable```
+  * add ```/usr/local/cuda/bin``` to the ```PATH``` variable
 
 
 
