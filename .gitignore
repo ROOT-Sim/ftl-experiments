@@ -3,6 +3,7 @@ sim_build/
 run_logs/
 configs/
 bins/
+machine.tex
 *.pdf
 *report.log
 *.bin
