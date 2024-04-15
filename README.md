@@ -90,7 +90,7 @@ To run an experiment <exp> and process its results, type the following:
 To run all experiments and process their results at once, type the following:
 
 3. ```nohup ./exp.sh run_all &```
-4. ```./process_exp.sh all```
+4. ```./exp.sh all```
 
 The expected runtime of each experiment is detailed in the following table:
 
@@ -136,11 +136,7 @@ All scripts have been tested by running them from the following path:
 
 * Installing CUDA 12
   * follow the instruction on https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html
-  * add ```/usr/local/cuda/bin``` to the ```PATH``` variable
-
-
-
-
-
-
+  * ensure that cmake finds CUDA by:
+     * either adding ```/usr/local/cuda/bin``` to the ```PATH``` variable
+     * or add ```set(CMAKE_CUDA_COMPILER /usr/local/cuda/bin/nvcc)``` to the ```rootsim_gputw//CMakeLists.txt``` file and run again ```./exp.sh build``` 
 
