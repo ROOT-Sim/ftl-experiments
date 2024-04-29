@@ -36,8 +36,9 @@ The hardware/software configuration used by the authors is:
 ## Kick the tires instructions
 
 1. Clone the repository: ```git clone https://github.com/ROOT-Sim/ftl-experiments.git FTL```
-2. Build: ```./exp.sh build```
-3. Run a small simulation ```./exp.sh kick```
+2. Move to the artifact folder: ```cd FTL```
+3. Build: ```./exp.sh build```
+4. Run a small simulation ```./exp.sh kick```
 
 ## Structure of the artifact
 
@@ -124,13 +125,10 @@ To generate a report with both original and reproduced figures:
 5. ```pdflatex report.tex```
 
 
-
 ## Notes
 All scripts have been tested by running them from the following path:
 
   ```FTL/```
-
-
 
 ## Common issues
 
@@ -138,5 +136,9 @@ All scripts have been tested by running them from the following path:
   * follow the instruction on https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html
   * ensure that cmake finds CUDA by:
      * either adding ```/usr/local/cuda/bin``` to the ```PATH``` variable
-     * or add ```set(CMAKE_CUDA_COMPILER /usr/local/cuda/bin/nvcc)``` to the ```rootsim_gputw//CMakeLists.txt``` file and run again ```./exp.sh build``` 
+     * or add ```set(CMAKE_CUDA_COMPILER /usr/local/cuda/bin/nvcc)``` to the ```rootsim_gputw/CMakeLists.txt``` file and run again ```./exp.sh build```
+
+## Available badge
+
+Once the RCR evaluation completes, the last snapshot of this repository will be uploaded to Zenodo. 
 
