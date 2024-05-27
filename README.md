@@ -4,7 +4,7 @@ This documents describes how to reproduce the results discussed in the paper:
 
 "Follow the Leader: Alternating CPU/GPU Computations in PDES"
 
-Submitted to ACM SIGSIM PADS 2024
+Accepted to ACM SIGSIM PADS 2024
 
 ## Authors & Contacts
 
@@ -15,9 +15,10 @@ Submitted to ACM SIGSIM PADS 2024
 ## Requirements
 
 * x86_64 CPU and CUDA capable GPU
-* Unix system with gcc toolchain
+* 32GB of RAM
+* Unix system with gcc/g++/cuda toolchain
 * The compilation should be performed on the target machine due to compile-time code generation phases
-* Running with root priviledges for gathering stats from performance counters
+* Root priviledges for gathering stats from performance counters
 
 The hardware/software configuration used by the authors is:
 
@@ -26,19 +27,31 @@ The hardware/software configuration used by the authors is:
 * GPU: NVIDIA RTX 3090 Ti
 * OS: Debian GNU/Linux 11
 
+
 ## Dependencies
 
-* For running tests: ```bash, gcc, cmake, make, cuda, python3, perf```
-* For processing data and generating figures: ```bash, Python3, pip3, pandas, gnuplot, fonts-linuxlibertine```
+* For running tests: ```bash, gcc, g++, cmake, make, cuda, python3, perf```
+* For processing data and generating figures: ```bash, python3, pip3, pandas, gnuplot, fonts-linuxlibertine```
 * For generating RCR report: ```pdflatex, lscpu, lsmem, lspci```
 
+Having CUDA toolkit and drivers working with distribution packages might not be trivial.
+We added two scripts that allows to install all the dependencies for Ubuntu 23.10:
+
+1. Move to the artifact folder: ```cd FTL```
+2. download CUDA: ```./download_cuda_12_5.sh```
+3. install all dependencies: ```./deps.sh```
+
+For other distributions please follows the instructions available at:
+* https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64
 
 ## Kick the tires instructions
 
 1. Clone the repository: ```git clone https://github.com/ROOT-Sim/ftl-experiments.git FTL```
 2. Move to the artifact folder: ```cd FTL```
-3. Build: ```./exp.sh build```
-4. Run a small simulation ```./exp.sh kick```
+3. Ensure that nvcc compiler is found by cmake (see Common Issues)
+4. Ensure that perf can monitor performance counters (see Common Issues)
+5. Build: ```./exp.sh build```
+6. Run a small simulation ```./exp.sh kick```
 
 ## Structure of the artifact
 
@@ -52,8 +65,10 @@ FTL/
  |-- exp.sh          /* script for bulding and launching experiments  */
  |-- LICENSE            /* license          */
  |-- README.md          /* This file */
-
+ |-- deps.sh         /* script for installing dependencies on Ubuntu 23.10 */
+ |-- download_cuda_12_5.sh /* script for downloading CUDA 12.5 for Ubuntu */
 ```
+
 ## License
 
 The software is released with the GPL 3 license.
@@ -133,12 +148,14 @@ All scripts have been tested by running them from the following path:
 ## Common issues
 
 * Installing CUDA 12
-  * follow the instruction on https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html
+  * follow the instructions available at https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64
   * ensure that cmake finds CUDA by:
      * either adding ```/usr/local/cuda/bin``` to the ```PATH``` variable
      * or add ```set(CMAKE_CUDA_COMPILER /usr/local/cuda/bin/nvcc)``` to the ```rootsim_gputw/CMakeLists.txt``` file and run again ```./exp.sh build```
+* Installing perf
+  * ```sudo apt install linux-tools-$(uname -r)```
+  * allows any process to gather perf stats: ```echo -1 | sudo tee /proc/sys/kernel/perf_event_paranoid```
 
 ## Available badge
 
-Once the RCR evaluation completes, the last snapshot of this repository will be uploaded to Zenodo. 
-
+DOI: 10.5281/zenodo.10401113
