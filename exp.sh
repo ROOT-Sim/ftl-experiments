@@ -28,6 +28,9 @@ WORKLOADS="alternating balanced unbalanced"
 
 if [[ "$1" == "build" ]]; then
   python3 -m venv .
+  source bin/activate
+  pip3 install pandas
+  deactivate
   if [[ ! -d rootsim_gputw ]]; then
   echo ###### cloning repository #########
    git clone https://github.com/ROOT-Sim/core.git --single-branch --branch gpu-test-conf rootsim_gputw
