@@ -27,6 +27,7 @@ XPUS="1 2 3"
 WORKLOADS="alternating balanced unbalanced"
 
 if [[ "$1" == "build" ]]; then
+  python3 -m venv .
   if [[ ! -d rootsim_gputw ]]; then
   echo ###### cloning repository #########
    git clone https://github.com/ROOT-Sim/core.git --single-branch --branch gpu-test-conf rootsim_gputw
@@ -105,6 +106,7 @@ fi
 for j in $WORKLOADS; do
 run="$j"
 if [[ "$1" == "plot_$run" || "$1" == "plot_all" ]]; then
+  source bin/activate
   max=0
   for i in $XPUS; do
     tail -n2 run_logs/$run/$i.txt
@@ -121,6 +123,7 @@ if [[ "$1" == "plot_$run" || "$1" == "plot_all" ]]; then
     cd plot_scripts && ./process_log.sh ../run_logs/$run/$i.txt $max $s && cd ..
     cd plot_scripts && python3 parse_log_4_energy.py ../run_logs/$run && gnuplot -e "outputFileName='../run_logs/$run'" energy.plt && cd ..
   done
+  deactivate
 fi
 done
 
@@ -133,7 +136,7 @@ fi
 
 if [[ "$1" == "report" ]]; then
 echo "\item CPU:" $(lscpu | grep "Model name:" | cut -d':' -f2)                 > run_logs/machine.tex
-echo "\item GPU:" $(lspci | grep "VGA compatible controller:" | cut -d':' -f3) >> run_logs/machine.tex
+echo "\item GPU:" $(lspci | grep "NVIDIA" -i | cut -d':' -f3) >> run_logs/machine.tex
 echo "\item RAM:" $(lsmem | grep "Total online memory:" | cut -d':' -f2)       >> run_logs/machine.tex
 pdflatex report.tex
 fi
