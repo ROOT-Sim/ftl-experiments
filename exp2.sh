@@ -4,7 +4,7 @@ set -e
 
 CPUS=$(cat /sys/devices/system/cpu/online | cut -d'-' -f2)
 CPUS=$((CPUS+1))
-LPS=512
+LPS=256
 
 if (( $CPUS > 32 )); then 
 CPUS=32
@@ -24,8 +24,7 @@ mkdir -p configs
 
 
 XPUS="1 2 3"
-WORKLOADS="balanced unbalanced alternating"
-WORKLOADS="unbalanced"
+VOLATILITY="1 0.5 0.25"
 
 if [[ "$1" == "build" ]]; then
   python3 -m venv .
@@ -41,53 +40,37 @@ if [[ "$1" == "build" ]]; then
   cmake -Bsim_build -Srootsim_gputw -DCMAKE_BUILD_TYPE=Release
 
   echo ###### generating configs #######
-  echo "#define NUM_THREADS $((CPUS-1))" > configs/balanced.h
-  echo "#define NUM_LPS ($LPS*1024)" >> configs/balanced.h
-  cp configs/balanced.h configs/unbalanced.h
-  cp configs/balanced.h configs/alternating.h
-  cp configs/balanced.h configs/kick.h
+  echo "#define NUM_THREADS $((CPUS-1))" > configs/trace.h
+  echo "#define NUM_LPS ($LPS*1024)" >> configs/trace.h
 
-  echo "#define ENABLE_HOT 1"        >> configs/balanced.h
-  echo "#define PHASE_WINDOW_SIZE (1)" >> configs/balanced.h
-  echo "#define HOT_PHASE_PERIOD (80*1000*1000)"  >> configs/balanced.h
-  echo "#define END_SIM_GVT  (64*1000*1000)" >> configs/balanced.h
-
-  echo "#define ENABLE_HOT 1"        >> configs/unbalanced.h
-  echo "#define PHASE_WINDOW_SIZE (80*1000*1000)" >> configs/unbalanced.h
-  echo "#define HOT_PHASE_PERIOD 2"  >> configs/unbalanced.h
-  echo "#define END_SIM_GVT  (64*1000*1000)" >> configs/unbalanced.h
-
-  echo "#define ENABLE_HOT 1"        >> configs/alternating.h
-  echo "#define PHASE_WINDOW_SIZE (8*1000*1000)" >> configs/alternating.h
-  echo "#define HOT_PHASE_PERIOD 2"  >> configs/alternating.h
-  echo "#define END_SIM_GVT  (64*1000*1000)" >> configs/alternating.h
-
-
-  echo "#define ENABLE_HOT 1"        >> configs/kick.h
-  echo "#define PHASE_WINDOW_SIZE (8*1000*100)" >> configs/kick.h
-  echo "#define HOT_PHASE_PERIOD 2"  >> configs/kick.h
-  echo "#define END_SIM_GVT  (32*1000*100)" >> configs/kick.h
+  echo "#define ENABLE_HOT 1"        >> configs/trace.h
+  echo "#define PHASE_WINDOW_SIZE (8*1000*1000)" >> configs/trace.h
+  echo "#define HOT_PHASE_PERIOD 2"  >> configs/trace.h
+  echo "#define END_SIM_GVT  (64*1000*1000)" >> configs/trace.h
 
 
   echo ###### building binaries #########
-  cp configs/kick.h rootsim_gputw/src/cuda/phold/test_config.h && make -j8 -C sim_build && cp sim_build/test/test_phold bins/kick
-  for j in $WORKLOADS; do
-    cp configs/$j.h rootsim_gputw/src/cuda/phold/test_config.h && make -j8 -C sim_build && cp sim_build/test/test_phold bins/$j
+  cp configs/trace.h rootsim_gputw/src/cuda/phold/test_config.h
+  
+  for j in $VOLATILITY; do
+    for i in {1..40}; do
+		cp ftl_speed_trajectories/phold_trace/volatility_${j}_seed_${i}.txt rootsim_gputw/src/cuda/phold/settings_cpu.h && make -j8 -C sim_build && cp sim_build/test/test_phold bins/trace_${j}_${i}
+	done
   done
 fi
 
-for j in $WORKLOADS; do
-run="$j"
-if [[ "$1" == "run_$run" || "$1" == "run_all" ]]; then
-  echo -1 | sudo tee /proc/sys/kernel/perf_event_paranoid
-  mkdir -p run_logs/$run
-  for i in $XPUS; do
-    echo python3 rootsim_gputw/measure_energy.py ./bins/$run $i > run_logs/$run/$i.sh
-    python3 rootsim_gputw/measure_energy.py ./bins/$run $i | tee run_logs/$run/$i.txt
-  done
-fi
+for j in $VOLATILITY; do
+  for i in {1..10}; do
+	for h in {0..2}; do
+		if [[ "$1" == "run_all" ]]; then
+		  echo -1 | sudo tee /proc/sys/kernel/perf_event_paranoid
+		  mkdir -p trace_logs/
+          echo python3 rootsim_gputw/measure_energy.py ./bins/trace_${j}_${i} 3 $h > trace_logs/trace_${j}_${i}_${h}.sh
+          python3 rootsim_gputw/measure_energy.py ./bins/trace_${j}_${i} 3 $h | tee trace_logs/trace_${j}_${i}_${h}.txt
+		fi
+	  done
+	done
 done
-
 
 i=0
 if [[ "$1" == "run_cpu" ]]; then
